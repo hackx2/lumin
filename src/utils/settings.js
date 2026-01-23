@@ -4,5 +4,6 @@ module.exports = (overrides = {}) => ({
     botPermissions: [],
     userPermissions: [],
     cooldown: 0,
+    permissions: [],
     ...overrides,
 });
