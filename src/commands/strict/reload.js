@@ -1,17 +1,14 @@
-const { SlashCommandBuilder, PermissionFlagsBits} = require("discord.js");
-const settings = require("../../utils/settings");
+const { SlashCommandBuilder, PermissionFlagsBits, MessageFlags } = require("discord.js");
 const notification = require("../../utils/notification");
 
 module.exports = {
-    data: new SlashCommandBuilder()
-        .setName("reload")
-        .setDescription("Reload slash commands")
-        .setDefaultMemberPermissions(PermissionFlagsBits.Administrator), 
-
-    settings: settings({ ownerOnly: true }),
-
+    data: new SlashCommandBuilder().setName("reload").setDescription("Reload Slash Commands...")
+        .setDefaultMemberPermissions(PermissionFlagsBits.Administrator),
+    
+    settings: require("../../utils/settings")({ ownerOnly: false, permissions: [PermissionFlagsBits.Administrator] }),
+    
     async run(interaction, client) {
-        await interaction.deferReply({ ephemeral: true });
+        await interaction.deferReply({ flags: [MessageFlags.Ephemeral] });
 
         try {
             client.commands.clear();

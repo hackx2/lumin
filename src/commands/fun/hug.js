@@ -27,7 +27,7 @@ module.exports = {
             if (!post?.file?.url) throw new Error("Post has no image");
 
             const imageUrl = post.file.url;
-
+            const artists= post.tags.artist.join(', ');
             await interaction.editReply({
                 components: [new ContainerBuilder()
                     .addTextDisplayComponents(txt =>
@@ -35,7 +35,7 @@ module.exports = {
                     ).addMediaGalleryComponents(gallery =>
                         gallery.addItems(item => item.setURL(imageUrl))
                     ).addTextDisplayComponents(txt =>
-                        txt.setContent(`-# [View Post](https://e926.net/posts/${post.id}) • [View Raw](${imageUrl}) • by: ${post.tags.artist.join(', ')}`
+                        txt.setContent(`-# [View Post](https://e926.net/posts/${post.id}) • [View Raw](${imageUrl}) • by: ${artists.length <= 0 ? '???' : artists}`
                         )
                     )
                 ],
