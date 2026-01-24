@@ -26,7 +26,7 @@ module.exports = class extends require('../~BaseCommand') {
         if (!postData || Date.now() - postData.fetchedAt > CACHE_WAIT) {
             try {
                 const res = await fetch(`https://e926.net/posts.json?tags=id:${randomID}`, {
-                    headers: { 'User-Agent': 'lumin/1.0 (by uni) ' + CLIENT_ID },
+                    headers: { 'User-Agent': 'lumin/1.0 (by uni)' },
                 });
 
                 if (!res.ok) {
@@ -40,7 +40,7 @@ module.exports = class extends require('../~BaseCommand') {
                 if (!post?.file?.url) throw new Error('Post has no image');
 
                 const imgRes = await fetch(post.file.url, {
-                    headers: { 'User-Agent': 'lumin/1.0 (by uni) ' + CLIENT_ID },
+                    headers: { 'User-Agent': 'lumin/1.0 (by uni)' },
                 });
                 if (!imgRes.ok) throw new Error(`Failed to fetch image ${imgRes.status}`);
                 //const buffer = await imgRes.arrayBuffer();
