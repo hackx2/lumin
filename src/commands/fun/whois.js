@@ -1,18 +1,22 @@
 const { SlashCommandBuilder, ContainerBuilder, MessageFlags } = require('discord.js');
 const settings = require('../../utils/settings');
 
-module.exports = {
-    data: new SlashCommandBuilder()
-        .setName('whois')
-        .setDescription('Show detailed info about a user')
-        .addUserOption((option) =>
-            option
-                .setName('user')
-                .setDescription('User to view (defaults to yourself)')
-                .setRequired(false),
-        ),
+module.exports = class extends require('../~BaseCommand') {
+    constructor() {
+        super({ cooldown: 5 });
 
-    settings: settings({ cooldown: 5 }),
+        this.data = new SlashCommandBuilder()
+            .setName('whois')
+            .setDescription('Show detailed info about a user')
+            .addUserOption((option) =>
+                option
+                    .setName('user')
+                    .setDescription('User to view (defaults to yourself)')
+                    .setRequired(false),
+            );
+
+        this.settings = settings({ cooldown: 5 });
+    }
 
     async run(interaction) {
         // This'll give us some time to render the reply...
@@ -58,8 +62,8 @@ module.exports = {
                     .addMediaGalleryComponents((gallery) => {
                         gallery.addItems((item) => item.setURL('attachment://banner.png'));
                         return gallery;
-                    }).addSeparatorComponents((separator) => separator)
-
+                    })
+                    .addSeparatorComponents((separator) => separator)
                     .addTextDisplayComponents((txt) =>
                         txt.setContent(`### ${user.globalName ?? user.username} (<@${user.id}>)`),
                     )
@@ -76,12 +80,13 @@ module.exports = {
                                     ? `**Accent Color:** \`${accentColor}\` [view](https://www.color-hex.com/color/${accentColor.replace('#', '')})`
                                     : null,
                                 member && member.roles
-                                    ? `**Roles:** ${member.roles.cache
-                                        .map((r) => r.name)
-                                        .filter((n) => n !== '@everyone')
-                                        .map((n) => `\`${n}\``)
-                                        .join(', ') || 'None'
-                                    }`
+                                    ? `**Roles:** ${
+                                          member.roles.cache
+                                              .map((r) => r.name)
+                                              .filter((n) => n !== '@everyone')
+                                              .map((n) => `\`${n}\``)
+                                              .join(', ') || 'None'
+                                      }`
                                     : null,
                             ]
                                 .filter(Boolean)
@@ -93,5 +98,5 @@ module.exports = {
             ],
             flags: [MessageFlags.IsComponentsV2],
         });
-    },
+    }
 };

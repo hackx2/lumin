@@ -1,36 +1,50 @@
 const vm = require('vm');
 const { SlashCommandBuilder, PermissionFlagsBits, MessageFlags } = require('discord.js');
 
-module.exports = {
-    data: new SlashCommandBuilder()
-        .setName('eval')
-        .setDescription('eval code')
-        .addStringOption((option) =>
-            option.setName('code').setDescription('Code to evaluate').setRequired(true),
-        )
-        .setDefaultMemberPermissions(PermissionFlagsBits.Administrator),
+module.exports = class extends require('../~BaseCommand') {
+    constructor() {
+        super({ ownerOnly: true });
 
-    settings: require('../../utils/settings')({ ownerOnly: true }),
+        this.data = new SlashCommandBuilder()
+            .setName('eval')
+            .setDescription('eval stuffs')
+            .addStringOption((option) =>
+                option.setName('code').setDescription('code?').setRequired(true),
+            )
+            .setDefaultMemberPermissions(PermissionFlagsBits.Administrator);
+    }
 
     async run(interaction, client) {
         const code = interaction.options.getString('code');
 
         try {
-            const evalVM = vm.runInNewContext(code, {
+            const result = vm.runInNewContext(code, {
                 client,
                 console,
                 interaction,
             });
 
-            await interaction.reply({
-                content: `Result:\n\`\`\`js\n${String(evalVM)}\n\`\`\``,
-                flags: [MessageFlags.Ephemeral],
-            });
+            if (!interaction.replied && !interaction.deferred) {
+                await interaction.reply({
+                    content: `Result:\n\`\`\`js\n${String(result)}\n\`\`\``,
+                    flags: [MessageFlags.Ephemeral],
+                });
+            } else {
+                await interaction.editReply({
+                    content: `Result:\n\`\`\`js\n${String(result)}\n\`\`\``,
+                });
+            }
         } catch (err) {
-            await interaction.reply({
-                content: `Error:\n\`\`\`${err.message}\`\`\``,
-                flags: [MessageFlags.Ephemeral],
-            });
+            if (!interaction.replied && !interaction.deferred) {
+                await interaction.reply({
+                    content: `Error:\n\`\`\`${err.message}\`\`\``,
+                    flags: [MessageFlags.Ephemeral],
+                });
+            } else {
+                await interaction.editReply({
+                    content: `Error:\n\`\`\`${err.message}\`\`\``,
+                });
+            }
         }
-    },
+    }
 };

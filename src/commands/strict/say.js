@@ -1,24 +1,27 @@
 const { SlashCommandBuilder, PermissionFlagsBits } = require('discord.js');
-const settings = require('../../utils/settings');
 
-module.exports = {
-    data: new SlashCommandBuilder()
-        .setName('say')
-        .setDescription('nuh uh')
-        .addStringOption((opt) => opt.setName('text').setDescription('mrrp').setRequired(true))
-        .setDefaultMemberPermissions(PermissionFlagsBits.Administrator),
+module.exports = class extends require('../~BaseCommand') {
+    constructor() {
+        super({ ownerOnly: true });
 
-    settings: settings({ ownerOnly: true }),
+        this.data = new SlashCommandBuilder()
+            .setName('say')
+            .setDescription('Send a message as the bot')
+            .addStringOption((opt) =>
+                opt.setName('text').setDescription('Text to send').setRequired(true),
+            )
+            .setDefaultMemberPermissions(PermissionFlagsBits.Administrator);
+    }
 
-    async run(interaction, _) {
-        const text = interaction.options.getString('text');
-
+    async run(interaction) {
         try {
+            const text = interaction.options.getString('text');
+
             await interaction.deferReply({ ephemeral: true });
             await interaction.channel.send({ content: text });
             await interaction.deleteReply();
         } catch (err) {
             console.error(err);
         }
-    },
+    }
 };

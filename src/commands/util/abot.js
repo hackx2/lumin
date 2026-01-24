@@ -1,13 +1,16 @@
 const { ContainerBuilder, SlashCommandBuilder, MessageFlags } = require('discord.js');
-const osModule = require('../../utils/os');
-const settings = require('../../utils/settings');
 
-module.exports = {
-    data: new SlashCommandBuilder().setName('abot').setDescription("lumin's bot information"),
+module.exports = class extends require('../~BaseCommand') {
+    constructor() {
+        super({ cooldown: 5 });
 
-    settings: settings({ cooldown: 5 }),
+        this.data = new SlashCommandBuilder()
+            .setName('abot')
+            .setDescription("lumin's bot information");
+    }
 
     async run(interaction, client) {
+        const osUtility = require('../../utils/os');
         const git = await require('../../utils/git')();
 
         const repoPath = git.repoURL.split('/').slice(-2).join('/').replace('.git', '');
@@ -26,18 +29,18 @@ module.exports = {
                             text.setContent(
                                 `**Ping:** ${client.ws.ping === -1 ? '`???`' : `${client.ws.ping}ms`}`,
                             ),
-                        (text) => text.setContent(`**Uptime:** ${osModule.uptime}`),
+                        (text) => text.setContent(`**Uptime:** ${osUtility.uptime}`),
                         (text) =>
                             text.setContent(
-                                `**Operating System:** \`${osModule.platform} (${require('os').arch()})\``,
+                                `**Operating System:** \`${osUtility.platform} (${require('os').arch()})\``,
                             ),
                         (text) =>
                             text.setContent(
-                                `**CPU:** \`${osModule.cpu.cpu.model}\` • Cores: \`${require('os').cpus().length}\` • Usage: \`${osModule.cpu.percent}%\``,
+                                `**CPU:** \`${osUtility.cpu.cpu.model}\` • Cores: \`${require('os').cpus().length}\` • Usage: \`${osUtility.cpu.percent}%\``,
                             ),
                         (text) =>
                             text.setContent(
-                                `**RAM:** \`${osModule.ram.used} / ${osModule.ram.total} MB\``,
+                                `**RAM:** \`${osUtility.ram.used} / ${osUtility.ram.total} MB\``,
                             ),
                     )
 
@@ -57,5 +60,5 @@ module.exports = {
             ],
             flags: MessageFlags.IsComponentsV2,
         });
-    },
+    }
 };

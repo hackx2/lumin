@@ -18,9 +18,10 @@ function getRenderID(userID, avatarURL, bannerURL, version = 1) {
     return hash.slice(0, 8);
 }
 
-function roundRect(ctx, x, y, width, height, radius) { // MY BRAINNNNNN
+function roundRect(ctx, x, y, width, height, radius) {
+    // MY BRAINNNNNN
     radius = Math.min(radius, width / 2, height / 2);
-    
+
     ctx.beginPath();
     ctx.moveTo(x + radius, y);
     ctx.lineTo(x + width - radius, y);
@@ -65,16 +66,19 @@ module.exports = async function ({ userID, avatarURL, bannerURL }) {
         ctx.fillRect(0, 0, canvasWidth, canvasHeight);
     }
 
-    const lineCount = 13, maxAmplitude = 25;
+    const lineCount = 13,
+        maxAmplitude = 25;
     ctx.save();
     ctx.strokeStyle = '#ffffff14';
     ctx.lineWidth = 1;
-    for (let i = 0; i < lineCount; i++) { // my awful attempt at a topographic map-like background overlay :<
-        ctx.beginPath();                  // I mean- it was more of something i was aiming to do..
+    for (let i = 0; i < lineCount; i++) {
+        // my awful attempt at a topographic map-like background overlay :<
+        ctx.beginPath(); // I mean- it was more of something i was aiming to do..
         const yBase = i * (canvasHeight / lineCount);
         ctx.beginPath();
         for (let x = 0; x <= canvasWidth; x += 10) {
-            const noise = Math.sin((x / canvasWidth) * Math.PI * 4 + i) * maxAmplitude * Math.random();
+            const noise =
+                Math.sin((x / canvasWidth) * Math.PI * 4 + i) * maxAmplitude * Math.random();
             const y = yBase + noise;
             if (x === 0) ctx.moveTo(x, y);
             else ctx.lineTo(x, y);
@@ -85,7 +89,8 @@ module.exports = async function ({ userID, avatarURL, bannerURL }) {
 
     if (avatarImage) {
         const avatarSize = 256;
-        const avatarX = 35, avatarY = (canvasHeight - avatarSize) / 2;
+        const avatarX = 35,
+            avatarY = (canvasHeight - avatarSize) / 2;
 
         ctx.save();
         roundRect(ctx, avatarX, avatarY, avatarSize, avatarSize, 40);
@@ -100,7 +105,7 @@ module.exports = async function ({ userID, avatarURL, bannerURL }) {
     ctx.font = '12px sans-serif';
     ctx.fillStyle = '#ffffff4d';
     ctx.textAlign = 'right';
-    ctx.fillText(renderID, canvasWidth - 10, canvasHeight - 10);
+    ctx.fillText('lumin • ' + renderID, canvasWidth - 10, canvasHeight - 10);
     ctx.restore();
 
     const buffer = canvas.toBuffer('image/png');

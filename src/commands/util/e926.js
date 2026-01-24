@@ -2,15 +2,17 @@ const { SlashCommandBuilder, ContainerBuilder, MessageFlags } = require('discord
 const settings = require('../../utils/settings');
 const notification = require('../../utils/notification');
 
-module.exports = {
-    data: new SlashCommandBuilder()
-        .setName('e926')
-        .setDescription("Get random art from e926's api")
-        .addStringOption((opt) =>
-            opt.setName('tags').setDescription('(optional) tags (space separated)'),
-        ),
+module.exports = class extends require('../~BaseCommand') {
+    constructor() {
+        super({ cooldown: 5 });
 
-    settings: settings({ cooldown: 5 }),
+        this.data = new SlashCommandBuilder()
+            .setName('e926')
+            .setDescription("Get random art from e926's api")
+            .addStringOption((opt) =>
+                opt.setName('tags').setDescription('(optional) tags (space separated)'),
+            );
+    }
 
     async run(interaction) {
         const tagString = interaction.options.getString('tags') ?? '';
@@ -33,17 +35,16 @@ module.exports = {
 
             const { post } = await res.json();
 
-            if (!post?.sample?.url) {
+            if (!post?.file?.url) {
                 await interaction.editReply(notification(':<  No image found'));
+                return;
             }
 
             await interaction.editReply({
                 components: [
                     new ContainerBuilder()
                         .addMediaGalleryComponents((gallery) =>
-                            gallery.addItems((item) =>
-                                item.setURL(post?.sample?.url).setDescription(`Sample Image`),
-                            ),
+                            gallery.addItems((item) => item.setURL(post.file.url)),
                         )
                         .addTextDisplayComponents((txt) =>
                             txt.setContent(
@@ -57,5 +58,5 @@ module.exports = {
             console.error(err);
             await interaction.editReply(notification(':<  Failed to fetch art'));
         }
-    },
+    }
 };
