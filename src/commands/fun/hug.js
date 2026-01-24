@@ -25,8 +25,8 @@ module.exports = class extends require('../~BaseCommand') {
         });
 
         if (!res.ok) {
-            console.error(`Failed to fetch post ${res.status}`);
-            return interaction.editReply(notification(':< failed to fetch hug img'));
+            console.error(`Failed to fetch post ${res.status} ${randomID}`);
+            return interaction.editReply(notification(':< failed to fetch hug img '+ randomID));
         }
 
         const post = (await res.json()).posts?.[0];
