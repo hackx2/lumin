@@ -6,9 +6,6 @@ const path = require('path');
 const postsFile = path.join(__dirname, './hug.json');
 const posts = JSON.parse(fs.readFileSync(postsFile, 'utf-8'));
 
-const CACHE_WAIT = 1000 * 60 * 5; // 5minsss
-const cache = new Map();
-
 module.exports = class extends require('../~BaseCommand') {
     constructor() {
         super({});
@@ -26,32 +23,23 @@ module.exports = class extends require('../~BaseCommand') {
         const targetUser = interaction.options.getUser('cutie');
         const randomPost = posts[Math.floor(Math.random() * posts.length)];
 
-        let postData = cache.get(randomPost.id);
+        let postData;
+        try {
+            const imagePath = path.join(__dirname, './hug', randomPost.id + '.png');
+            if (!fs.existsSync(imagePath)) throw new Error(`img file not found: ${imagePath}`);
 
-        if (!postData || Date.now() - postData.fetchedAt > CACHE_WAIT) {
-            try {
-                const res = await fetch(randomPost.url, {
-                    headers: { 'User-Agent': `lumin/1.0 (by uni) ${String(process.env.CLIENT_ID)}` },
-                });
+            const buffer = fs.readFileSync(imagePath);
 
-                if (!res.ok) throw new Error(`Failed to fetch image ${res.status}`);
-                //const buffer = await imgRes.arrayBuffer();
-                const arrayBuffer = await res.arrayBuffer();
-                const buffer = Buffer.from(arrayBuffer);
-
-                postData = {
-                    ...randomPost,
-                    buffer,
-                    fetchedAt: Date.now(),
-                };
-
-                cache.set(randomPost.id, postData);
-            } catch (err) {
-                console.error(err);
-                return interaction.editReply(
-                    notification(`:< Failed to fetch hug image ${randomPost.id}`),
-                );
-            }
+            postData = {
+                ...randomPost,
+                buffer,
+                fetchedAt: Date.now(),
+            };
+        } catch (err) {
+            console.error(err);
+            return interaction.editReply(
+                notification(`:< Failed to load hug image ${randomPost.id}`),
+            );
         }
 
         const container = new ContainerBuilder()
@@ -65,10 +53,9 @@ module.exports = class extends require('../~BaseCommand') {
             )
             .addTextDisplayComponents((txt) =>
                 txt.setContent(
-                    `-# [View Post](https://e926.net/posts/${postData.id}/)  • [View Raw](${postData.url}) • by: ${postData.artists.join(', ')}`,
+                    `-# [View Post](https://e926.net/posts/${postData.id}) • by: ${postData.artists.join(', ')}`,
                 ),
             );
-
         await interaction.editReply({
             files: [
                 {
