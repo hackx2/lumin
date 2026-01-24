@@ -26,7 +26,7 @@ module.exports = class extends require('../~BaseCommand') {
 
             const res = await fetch(`https://e926.net/posts/random.json?${params}`, {
                 headers: {
-                    'User-Agent': 'lumin',
+                    'User-Agent': 'lumin' + CLIENT_ID,
                 },
             });
 
