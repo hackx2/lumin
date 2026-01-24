@@ -1,4 +1,4 @@
-const os = require("os");
+const os = require('os');
 
 const cpu = os.cpus()[0];
 
@@ -22,19 +22,20 @@ function getRam() {
     const used = total - free;
     return {
         used: (used / 1024 / 1024).toFixed(2),
-        total: (total / 1024 / 1024).toFixed(2)
+        total: (total / 1024 / 1024).toFixed(2),
     };
 }
 
 module.exports = {
-    platform: process.platform === "darwin"
-        ? process.arch === "arm64"
-            ? "macOS (Apple Silicon)"
-            : "macOS (Intel)"
-        : {
-            win32: "Windows",
-            linux: "Linux",
-        }[process.platform] ?? "Unknown",
+    platform:
+        process.platform === 'darwin'
+            ? process.arch === 'arm64'
+                ? 'macOS (Apple Silicon)'
+                : 'macOS (Intel)'
+            : ({
+                  win32: 'Windows',
+                  linux: 'Linux',
+              }[process.platform] ?? 'Unknown'),
 
     get uptime() {
         return formatUptime(process.uptime());
@@ -44,10 +45,10 @@ module.exports = {
         cpu,
         get percent() {
             return getCpuPercent();
-        }
+        },
     },
 
     get ram() {
         return getRam();
-    }
+    },
 };

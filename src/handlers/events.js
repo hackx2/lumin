@@ -1,5 +1,5 @@
-const fs = require("fs");
-const path = require("path");
+const fs = require('fs');
+const path = require('path');
 
 function loadEvents(client, dir) {
     const eventFolder = fs.readdirSync(dir, { withFileTypes: true });
@@ -12,13 +12,13 @@ function loadEvents(client, dir) {
             continue;
         }
 
-        if (!evnt.name.endsWith(".js")) continue;
+        if (!evnt.name.endsWith('.js')) continue;
 
         delete require.cache[require.resolve(fullPath)];
 
         const event = require(fullPath);
 
-        if (!event?.id || typeof event.run !== "function") {
+        if (!event?.id || typeof event.run !== 'function') {
             console.warn(`Invalid event file${fullPath}`);
             continue;
         }
@@ -29,7 +29,7 @@ function loadEvents(client, dir) {
             } catch (err) {
                 console.error(`Error in event ${event.id}`, err);
             }
-        };
+        }
 
         if (event.once) {
             client.once(event.id, handler);
@@ -40,6 +40,6 @@ function loadEvents(client, dir) {
 }
 
 module.exports.run = (client) => {
-    const eventsPath = path.join(__dirname, "../events");
+    const eventsPath = path.join(__dirname, '../events');
     loadEvents(client, eventsPath);
 };

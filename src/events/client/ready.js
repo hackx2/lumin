@@ -1,4 +1,4 @@
-const { Events, ActivityType, PresenceUpdateStatus } = require("discord.js");
+const { Events, ActivityType, PresenceUpdateStatus } = require('discord.js');
 
 module.exports = {
     id: Events.ClientReady,
@@ -8,7 +8,7 @@ module.exports = {
 
         client.user.setPresence({
             activities: [{ name: 'LoFi 🌙', type: ActivityType.Listening }],
-            status: PresenceUpdateStatus.Idle
+            status: PresenceUpdateStatus.Idle,
         });
-    }
-}
+    },
+};
