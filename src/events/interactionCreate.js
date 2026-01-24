@@ -1,10 +1,10 @@
-const { Events } = require("discord.js");
-const fs = require("fs");
-const path = require("path");
-const notification = require("../utils/notification");
-const settings = require("../utils/settings");
+const { Events } = require('discord.js');
+const fs = require('fs');
+const path = require('path');
+const notification = require('../utils/notification');
+const settings = require('../utils/settings');
 
-const checksDir = path.join(__dirname, "../utils/settings");
+const checksDir = path.join(__dirname, '../utils/settings');
 
 const defaultSettings = settings();
 
@@ -18,10 +18,10 @@ module.exports = {
 
         const settings = { ...defaultSettings, ...command.settings };
 
-        const checkFiles = fs.readdirSync(checksDir).filter((f) => f.endsWith(".js"));
+        const checkFiles = fs.readdirSync(checksDir).filter((f) => f.endsWith('.js'));
 
         for (const f of checkFiles) {
-            const checkName = f.replace(".js", "");
+            const checkName = f.replace('.js', '');
 
             // mraow
             if (settings[checkName] !== defaultSettings[checkName]) {
@@ -36,7 +36,11 @@ module.exports = {
         } catch (err) {
             console.error(err);
             if (!interaction.replied) {
-                await interaction.reply(notification("An error occurred while executing the command.......", {ephemeral: true}));
+                await interaction.reply(
+                    notification('An error occurred while executing the command.......', {
+                        ephemeral: true,
+                    }),
+                );
             }
         }
     },

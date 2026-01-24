@@ -1,4 +1,4 @@
-const notification = require("../notification");
+const notification = require('../notification');
 
 const cooldowns = new Map();
 
@@ -14,11 +14,15 @@ module.exports = {
 
         if (now < expires) {
             const seconds = Math.ceil((expires - now) / 1000);
-            await interaction.reply(notification(`🫸Wait \`${seconds}s\` before using this command again...`, { ephemeral: true, }));
+            await interaction.reply(
+                notification(`🫸Wait \`${seconds}s\` before using this command again...`, {
+                    ephemeral: true,
+                }),
+            );
             return false;
         }
 
         cooldowns.set(key, now + settings.cooldown * 1000);
         return true;
-    }
+    },
 };
