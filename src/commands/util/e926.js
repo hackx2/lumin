@@ -1,5 +1,4 @@
 const { SlashCommandBuilder, ContainerBuilder, MessageFlags } = require('discord.js');
-const settings = require('../../utils/settings');
 const notification = require('../../utils/notification');
 
 module.exports = class extends require('../~BaseCommand') {

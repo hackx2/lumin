@@ -1,5 +1,4 @@
 const { SlashCommandBuilder, ContainerBuilder, MessageFlags } = require('discord.js');
-const settings = require('../../utils/settings');
 
 module.exports = class extends require('../~BaseCommand') {
     constructor() {
@@ -14,8 +13,6 @@ module.exports = class extends require('../~BaseCommand') {
                     .setDescription('User to view (defaults to yourself)')
                     .setRequired(false),
             );
-
-        this.settings = settings({ cooldown: 5 });
     }
 
     async run(interaction) {

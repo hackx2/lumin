@@ -9,19 +9,19 @@ const notification = require('../../utils/notification');
 module.exports = class extends require('../~BaseCommand') {
     constructor() {
         super({
-            permissions: [PermissionFlagsBits.KickMembers],
+            permissions: [PermissionFlagsBits.BanMembers],
         });
 
         this.data = new SlashCommandBuilder()
-            .setName('kick')
-            .setDescription('Kick a user from the server')
+            .setName('ban')
+            .setDescription('Ban a user from the server')
             .addUserOption((opt) =>
-                opt.setName('user').setDescription('User to kick').setRequired(true),
+                opt.setName('user').setDescription('User to ban').setRequired(true),
             )
             .addStringOption((opt) =>
                 opt.setName('reason').setDescription('Reason').setRequired(false),
             )
-            .setDefaultMemberPermissions(PermissionFlagsBits.KickMembers);
+            .setDefaultMemberPermissions(PermissionFlagsBits.BanMembers);
     }
 
     async run(interaction) {
@@ -32,9 +32,9 @@ module.exports = class extends require('../~BaseCommand') {
 
         const me = interaction.guild.members.me;
 
-        if (!me.permissions.has(PermissionFlagsBits.KickMembers)) {
+        if (!me.permissions.has(PermissionFlagsBits.BanMembers)) {
             return interaction.editReply(
-                notification("I don't have permission to `KickMembers`.", { ephemeral: true }),
+                notification("I don't have permission to `BanMembers`.", { ephemeral: true }),
             );
         }
 
@@ -49,15 +49,15 @@ module.exports = class extends require('../~BaseCommand') {
         }
 
         try {
-            await interaction.guild.members.kick(user.id, { reason });
+            await interaction.guild.members.ban(user.id, { reason });
         } catch (err) {
             return interaction.editReply(
-                notification(`Failed to kick user: \`${err.message}\``, { ephemeral: true }),
+                notification(`Failed to ban user: \`${err.message}\``, { ephemeral: true }),
             );
         }
 
         const container = new ContainerBuilder()
-            .addTextDisplayComponents((t) => t.setContent('`/home/lumin/kick`'))
+            .addTextDisplayComponents((t) => t.setContent('`/home/lumin/ban`'))
             .addSeparatorComponents((s) => s)
             .addTextDisplayComponents((t) =>
                 t.setContent(
