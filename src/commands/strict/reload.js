@@ -3,7 +3,7 @@ const notification = require('../../utils/notification');
 
 module.exports = class extends require('../~BaseCommand') {
     constructor() {
-        super({ ownerOnly: false, permissions: [PermissionFlagsBits.Administrator] });
+        super({ ownerOnly: false });
 
         this.data = new SlashCommandBuilder()
             .setName('reload')
