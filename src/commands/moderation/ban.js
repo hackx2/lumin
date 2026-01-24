@@ -1,18 +1,28 @@
-const { SlashCommandBuilder, PermissionFlagsBits, MessageFlags } = require('discord.js');
-const { ContainerBuilder } = require('discord.js');
+const {
+    SlashCommandBuilder,
+    PermissionFlagsBits,
+    MessageFlags,
+    ContainerBuilder,
+} = require('discord.js');
 const notification = require('../../utils/notification');
 
-module.exports = {
-    data: new SlashCommandBuilder()
-        .setName('ban')
-        .setDescription('Ban a user from the server')
-        .addUserOption((opt) => opt.setName('user').setDescription('User to ban').setRequired(true))
-        .addStringOption((opt) => opt.setName('reason').setDescription('Reason').setRequired(false))
-        .setDefaultMemberPermissions(PermissionFlagsBits.BanMembers),
+module.exports = class extends require('../~BaseCommand') {
+    constructor() {
+        super({
+            permissions: [PermissionFlagsBits.KickMembers],
+        });
 
-    settings: require('../../utils/settings')({
-        permissions: [PermissionFlagsBits.BanMembers],
-    }),
+        this.data = new SlashCommandBuilder()
+            .setName('kick')
+            .setDescription('Kick a user from the server')
+            .addUserOption((opt) =>
+                opt.setName('user').setDescription('User to kick').setRequired(true),
+            )
+            .addStringOption((opt) =>
+                opt.setName('reason').setDescription('Reason').setRequired(false),
+            )
+            .setDefaultMemberPermissions(PermissionFlagsBits.KickMembers);
+    }
 
     async run(interaction) {
         await interaction.deferReply({ ephemeral: false });
@@ -22,9 +32,9 @@ module.exports = {
 
         const me = interaction.guild.members.me;
 
-        if (!me.permissions.has(PermissionFlagsBits.BanMembers)) {
+        if (!me.permissions.has(PermissionFlagsBits.KickMembers)) {
             return interaction.editReply(
-                notification("I don't have permission to `BanMembers`.", { ephemeral: true }),
+                notification("I don't have permission to `KickMembers`.", { ephemeral: true }),
             );
         }
 
@@ -39,15 +49,15 @@ module.exports = {
         }
 
         try {
-            await interaction.guild.members.ban(user.id, { reason });
+            await interaction.guild.members.kick(user.id, { reason });
         } catch (err) {
             return interaction.editReply(
-                notification(`Failed to ban user: \`${err.message}\``, { ephemeral: true }),
+                notification(`Failed to kick user: \`${err.message}\``, { ephemeral: true }),
             );
         }
 
         const container = new ContainerBuilder()
-            .addTextDisplayComponents((t) => t.setContent('`/home/lumin/ban`'))
+            .addTextDisplayComponents((t) => t.setContent('`/home/lumin/kick`'))
             .addSeparatorComponents((s) => s)
             .addTextDisplayComponents((t) =>
                 t.setContent(
@@ -63,5 +73,5 @@ module.exports = {
             components: [container],
             flags: MessageFlags.IsComponentsV2,
         });
-    },
+    }
 };

@@ -1,21 +1,28 @@
-const { SlashCommandBuilder, PermissionFlagsBits, MessageFlags } = require('discord.js');
-const { ContainerBuilder } = require('discord.js');
-const settings = require('../../utils/settings');
+const {
+    SlashCommandBuilder,
+    PermissionFlagsBits,
+    MessageFlags,
+    ContainerBuilder,
+} = require('discord.js');
 const notification = require('../../utils/notification');
 
-module.exports = {
-    data: new SlashCommandBuilder()
-        .setName('kick')
-        .setDescription('Kick a user from the server')
-        .addUserOption((opt) =>
-            opt.setName('user').setDescription('User to kick').setRequired(true),
-        )
-        .addStringOption((opt) => opt.setName('reason').setDescription('Reason').setRequired(false))
-        .setDefaultMemberPermissions(PermissionFlagsBits.KickMembers),
+module.exports = class extends require('../~BaseCommand') {
+    constructor() {
+        super({
+            permissions: [PermissionFlagsBits.KickMembers],
+        });
 
-    settings: settings({
-        permissions: [PermissionFlagsBits.KickMembers],
-    }),
+        this.data = new SlashCommandBuilder()
+            .setName('kick')
+            .setDescription('Kick a user from the server')
+            .addUserOption((opt) =>
+                opt.setName('user').setDescription('User to kick').setRequired(true),
+            )
+            .addStringOption((opt) =>
+                opt.setName('reason').setDescription('Reason').setRequired(false),
+            )
+            .setDefaultMemberPermissions(PermissionFlagsBits.KickMembers);
+    }
 
     async run(interaction) {
         await interaction.deferReply({ ephemeral: false });
@@ -48,6 +55,7 @@ module.exports = {
                 notification(`Failed to kick user: \`${err.message}\``, { ephemeral: true }),
             );
         }
+
         const container = new ContainerBuilder()
             .addTextDisplayComponents((t) => t.setContent('`/home/lumin/kick`'))
             .addSeparatorComponents((s) => s)
@@ -65,5 +73,5 @@ module.exports = {
             components: [container],
             flags: MessageFlags.IsComponentsV2,
         });
-    },
+    }
 };

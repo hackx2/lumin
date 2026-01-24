@@ -13,16 +13,24 @@ function loadCommands(client, dir) {
             continue;
         }
 
-        if (!entry.name.endsWith('.js')) continue;
+        if (entry.name.startsWith('~') || !entry.name.endsWith('.js')) continue;
 
         delete require.cache[require.resolve(fullPath)];
 
-        const command = require(fullPath);
+        let command;
+        try {
+            const woah = require(fullPath);
+            command = new woah();
+        } catch (e) {
+            console.error('Skipping:', fullPath);
+            continue;
+        }
 
         if (!command?.data || !command.data.name || typeof command.run !== 'function') {
             console.warn(`Invalid command file: ${fullPath}`);
             continue;
         }
+
         client.commands.set(command.data.name, command);
     }
 }
@@ -33,7 +41,7 @@ module.exports.run = (client) => {
     const commandsPath = path.join(__dirname, '../commands');
 
     if (!fs.existsSync(commandsPath)) {
-        console.warn('cmds dir not found');
+        console.warn('Commands directory not found');
         return;
     }
 
@@ -48,7 +56,6 @@ module.exports.run = (client) => {
             const data = await rest.put(Routes.applicationCommands(process.env.CLIENT_ID), {
                 body: commands,
             });
-
             console.log(`Successfully reloaded ${data.length} application (/) commands.`);
         } catch (error) {
             console.error(error);

@@ -1,20 +1,28 @@
-const { SlashCommandBuilder, PermissionFlagsBits, MessageFlags } = require('discord.js');
-const { ContainerBuilder } = require('discord.js');
+const {
+    SlashCommandBuilder,
+    PermissionFlagsBits,
+    MessageFlags,
+    ContainerBuilder,
+} = require('discord.js');
 const notification = require('../../utils/notification');
 
-module.exports = {
-    data: new SlashCommandBuilder()
-        .setName('unban')
-        .setDescription('Unban a user from the server')
-        .addStringOption((opt) =>
-            opt.setName('userid').setDescription('ID of the banned user').setRequired(true),
-        )
-        .addStringOption((opt) => opt.setName('reason').setDescription('Reason').setRequired(false))
-        .setDefaultMemberPermissions(PermissionFlagsBits.BanMembers),
+module.exports = class extends require('../~BaseCommand') {
+    constructor() {
+        super({
+            permissions: [PermissionFlagsBits.BanMembers],
+        });
 
-    settings: require('../../utils/settings')({
-        permissions: [PermissionFlagsBits.BanMembers],
-    }),
+        this.data = new SlashCommandBuilder()
+            .setName('unban')
+            .setDescription('Unban a user from the server')
+            .addStringOption((opt) =>
+                opt.setName('userid').setDescription('ID of the banned user').setRequired(true),
+            )
+            .addStringOption((opt) =>
+                opt.setName('reason').setDescription('Reason').setRequired(false),
+            )
+            .setDefaultMemberPermissions(PermissionFlagsBits.BanMembers);
+    }
 
     async run(interaction) {
         await interaction.deferReply();
@@ -27,9 +35,7 @@ module.exports = {
             user = await interaction.client.users.fetch(userId);
         } catch (err) {
             return interaction.editReply(
-                notification(`Failed to fetch user: \`${err.message}\``, {
-                    ephemeral: true,
-                }),
+                notification(`Failed to fetch user: \`${err.message}\``, { ephemeral: true }),
             );
         }
 
@@ -37,9 +43,7 @@ module.exports = {
 
         if (!me.permissions.has(PermissionFlagsBits.BanMembers)) {
             return interaction.editReply(
-                require('../../utils/notification')("I don't have permission to `BanMembers`.", {
-                    ephemeral: true,
-                }),
+                notification("I don't have permission to `BanMembers`.", { ephemeral: true }),
             );
         }
 
@@ -47,9 +51,7 @@ module.exports = {
             await interaction.guild.members.unban(user.id, reason);
         } catch (err) {
             return interaction.editReply(
-                notification(`Failed to unban user: \`${err.message}\``, {
-                    ephemeral: true,
-                }),
+                notification(`Failed to unban user: \`${err.message}\``, { ephemeral: true }),
             );
         }
 
@@ -70,5 +72,5 @@ module.exports = {
             components: [container],
             flags: MessageFlags.IsComponentsV2,
         });
-    },
+    }
 };
