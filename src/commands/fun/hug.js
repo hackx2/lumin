@@ -21,7 +21,7 @@ module.exports = class extends require('../~BaseCommand') {
         const randomID = postIDs[Math.floor(Math.random() * postIDs.length)];
 
         const res = await fetch(`https://e926.net/posts.json?tags=id:${randomID}`, {
-            headers: { 'User-Agent': 'lumin' },
+            headers: { 'User-Agent': 'lumin/1.0 (by uni)' },
         });
 
         if (!res.ok) {
