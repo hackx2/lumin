@@ -31,7 +31,7 @@ module.exports = class extends require('../~BaseCommand') {
         if (!postData || Date.now() - postData.fetchedAt > CACHE_WAIT) {
             try {
                 const res = await fetch(randomPost.url, {
-                    headers: { 'User-Agent': 'lumin/1.0 (by uni)' },
+                    headers: { 'User-Agent': `lumin/1.0 (by uni) ${String(process.env.CLIENT_ID)}` },
                 });
 
                 if (!res.ok) throw new Error(`Failed to fetch image ${res.status}`);
