@@ -1,7 +1,11 @@
 const { SlashCommandBuilder, ContainerBuilder, MessageFlags } = require('discord.js');
 const notification = require('../../utils/notification');
+const fs = require('fs');
+const path = require('path');
 
-const postIDs = [6133811, 5237471, 4451477, 3187538];
+const postsFile = path.join(__dirname, './hug.json');
+const posts = JSON.parse(fs.readFileSync(postsFile, 'utf-8'));
+
 const CACHE_WAIT = 1000 * 60 * 5; // 5minsss
 const cache = new Map();
 
@@ -20,45 +24,32 @@ module.exports = class extends require('../~BaseCommand') {
         await interaction.deferReply();
 
         const targetUser = interaction.options.getUser('cutie');
-        const randomID = postIDs[Math.floor(Math.random() * postIDs.length)];
+        const randomPost = posts[Math.floor(Math.random() * posts.length)];
 
-        let postData = cache.get(randomID);
+        let postData = cache.get(randomPost.id);
+
         if (!postData || Date.now() - postData.fetchedAt > CACHE_WAIT) {
             try {
-                const res = await fetch(`https://e926.net/posts.json?tags=id:${randomID}`, {
+                const res = await fetch(randomPost.url, {
                     headers: { 'User-Agent': 'lumin/1.0 (by uni)' },
                 });
 
-                if (!res.ok) {
-                    console.error(`Failed to fetch post ${res.status} ${randomID}`);
-                    return interaction.editReply(
-                        notification(':< failed to fetch hug img ' + randomID),
-                    );
-                }
-
-                const post = (await res.json()).posts?.[0];
-                if (!post?.file?.url) throw new Error('Post has no image');
-
-                const imgRes = await fetch(post.file.url, {
-                    headers: { 'User-Agent': 'lumin/1.0 (by uni)' },
-                });
-                if (!imgRes.ok) throw new Error(`Failed to fetch image ${imgRes.status}`);
+                if (!res.ok) throw new Error(`Failed to fetch image ${res.status}`);
                 //const buffer = await imgRes.arrayBuffer();
-                const arrayBuffer = await imgRes.arrayBuffer();
+                const arrayBuffer = await res.arrayBuffer();
                 const buffer = Buffer.from(arrayBuffer);
 
                 postData = {
-                    id: post.id,
-                    imageUrl: post.file.url,
+                    ...randomPost,
                     buffer,
-                    artists: post.tags.artist.join(', ') || '???',
                     fetchedAt: Date.now(),
                 };
-                cache.set(randomID, postData);
+
+                cache.set(randomPost.id, postData);
             } catch (err) {
                 console.error(err);
                 return interaction.editReply(
-                    notification(`:< Failed to fetch hug image ${randomID}`),
+                    notification(`:< Failed to fetch hug image ${randomPost.id}`),
                 );
             }
         }
@@ -74,7 +65,7 @@ module.exports = class extends require('../~BaseCommand') {
             )
             .addTextDisplayComponents((txt) =>
                 txt.setContent(
-                    `-# [View Post](https://e926.net/posts/${postData.id}) • [View Raw](${postData.imageUrl}) • by: ${postData.artists}`,
+                    `-# [View Post](https://e926.net/posts/${postData.id}/)  • [View Raw](${postData.url}) • by: ${postData.artists.join(', ')}`,
                 ),
             );
 
