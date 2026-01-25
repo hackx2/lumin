@@ -22,6 +22,7 @@ module.exports = class extends require('../~BaseCommand') {
                 client,
                 console,
                 interaction,
+                discordjs: require("discord.js")
             });
 
             if (!interaction.replied && !interaction.deferred) {
