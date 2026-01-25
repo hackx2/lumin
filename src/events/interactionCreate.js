@@ -1,7 +1,6 @@
 const { Events } = require('discord.js');
 const fs = require('fs');
 const path = require('path');
-const notification = require('../utils/notification');
 const settings = require('../utils/settings');
 
 const checksDir = path.join(__dirname, '../utils/settings');
@@ -35,7 +34,7 @@ module.exports = {
 
             if (!interaction.replied) {
                 await interaction.reply(
-                    notification('An error occurred while executing the command.......', {
+                    this.notification('An error occurred while executing the command.......', {
                         ephemeral: true,
                     }),
                 );

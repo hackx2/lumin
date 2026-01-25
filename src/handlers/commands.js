@@ -21,6 +21,7 @@ function loadCommands(client, dir) {
         try {
             const woah = require(fullPath);
             command = new woah();
+            command.stage();
         } catch (e) {
             console.error('Skipping:', fullPath);
             continue;

@@ -1,5 +1,4 @@
 const { SlashCommandBuilder, ContainerBuilder, MessageFlags } = require('discord.js');
-const notification = require('../../utils/notification');
 
 module.exports = class extends require('../~BaseCommand') {
     constructor() {
@@ -35,7 +34,7 @@ module.exports = class extends require('../~BaseCommand') {
             const { post } = await res.json();
 
             if (!post?.file?.url) {
-                await interaction.editReply(notification(':<  No image found'));
+                await interaction.editReply(this.notification(':<  No image found'));
                 return;
             }
 
@@ -55,7 +54,7 @@ module.exports = class extends require('../~BaseCommand') {
             });
         } catch (err) {
             console.error(err);
-            await interaction.editReply(notification(':<  Failed to fetch art'));
+            await interaction.editReply(this.notification(':<  Failed to fetch art'));
         }
     }
 };
