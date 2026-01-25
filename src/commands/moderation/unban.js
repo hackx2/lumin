@@ -4,7 +4,6 @@ const {
     MessageFlags,
     ContainerBuilder,
 } = require('discord.js');
-const notification = require('../../utils/notification');
 
 module.exports = class extends require('../~BaseCommand') {
     constructor() {
@@ -35,7 +34,7 @@ module.exports = class extends require('../~BaseCommand') {
             user = await interaction.client.users.fetch(userId);
         } catch (err) {
             return interaction.editReply(
-                notification(`Failed to fetch user: \`${err.message}\``, { ephemeral: true }),
+                this.notification(`Failed to fetch user: \`${err.message}\``, { ephemeral: true }),
             );
         }
 
@@ -43,7 +42,7 @@ module.exports = class extends require('../~BaseCommand') {
 
         if (!me.permissions.has(PermissionFlagsBits.BanMembers)) {
             return interaction.editReply(
-                notification("I don't have permission to `BanMembers`.", { ephemeral: true }),
+                this.notification("I don't have permission to `BanMembers`.", { ephemeral: true }),
             );
         }
 
@@ -51,7 +50,7 @@ module.exports = class extends require('../~BaseCommand') {
             await interaction.guild.members.unban(user.id, reason);
         } catch (err) {
             return interaction.editReply(
-                notification(`Failed to unban user: \`${err.message}\``, { ephemeral: true }),
+                this.notification(`Failed to unban user: \`${err.message}\``, { ephemeral: true }),
             );
         }
 

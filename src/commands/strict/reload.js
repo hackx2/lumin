@@ -1,5 +1,4 @@
 const { SlashCommandBuilder, PermissionFlagsBits, MessageFlags } = require('discord.js');
-const notification = require('../../utils/notification');
 
 module.exports = class extends require('../~BaseCommand') {
     constructor() {
@@ -17,10 +16,10 @@ module.exports = class extends require('../~BaseCommand') {
         try {
             client.commands.clear();
             require('../../handlers/commands').run(client);
-            await interaction.editReply(notification(';3 Slash commands reloaded!'));
+            await interaction.editReply(this.notification(';3 Slash commands reloaded!'));
         } catch (err) {
             console.error(err);
-            await interaction.editReply(notification(':< Failed to reload Slash commands.'));
+            await interaction.editReply(this.notification(':< Failed to reload Slash commands.'));
         }
     }
 };

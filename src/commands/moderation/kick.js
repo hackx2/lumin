@@ -4,7 +4,6 @@ const {
     MessageFlags,
     ContainerBuilder,
 } = require('discord.js');
-const notification = require('../../utils/notification');
 
 module.exports = class extends require('../~BaseCommand') {
     constructor() {
@@ -34,14 +33,14 @@ module.exports = class extends require('../~BaseCommand') {
 
         if (!me.permissions.has(PermissionFlagsBits.KickMembers)) {
             return interaction.editReply(
-                notification("I don't have permission to `KickMembers`.", { ephemeral: true }),
+                this.notification("I don't have permission to `KickMembers`.", { ephemeral: true }),
             );
         }
 
         const member = await interaction.guild.members.fetch(user.id).catch(() => null);
         if (member && member.roles.highest.position >= me.roles.highest.position) {
             return interaction.editReply(
-                notification(
+                this.notification(
                     "I can't ban this user because their role is higher than or equal to mine...",
                     { ephemeral: true },
                 ),
@@ -52,7 +51,7 @@ module.exports = class extends require('../~BaseCommand') {
             await interaction.guild.members.kick(user.id, { reason });
         } catch (err) {
             return interaction.editReply(
-                notification(`Failed to kick user: \`${err.message}\``, { ephemeral: true }),
+                this.notification(`Failed to kick user: \`${err.message}\``, { ephemeral: true }),
             );
         }
 

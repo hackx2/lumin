@@ -1,10 +1,8 @@
 const { SlashCommandBuilder, ContainerBuilder, MessageFlags } = require('discord.js');
-const notification = require('../../utils/notification');
 
 module.exports = class extends require('../~BaseCommand') {
     constructor() {
         super({ cooldown: 3 });
-
         this.data = new SlashCommandBuilder().setName('cat').setDescription('KITTAYY!!!');
     }
 
@@ -28,7 +26,7 @@ module.exports = class extends require('../~BaseCommand') {
             });
         } catch (err) {
             console.error(err);
-            await interaction.editReply(notification(":< couldn't find a kitty QwQ"));
+            await interaction.editReply(this.notification(":< couldn't find a kitty QwQ"));
         }
     }
 };
