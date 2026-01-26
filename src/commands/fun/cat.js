@@ -13,8 +13,7 @@ module.exports = class extends require('../~BaseCommand') {
             const res = await fetch('https://api.thecatapi.com/v1/images/search');
             if (!res.ok) throw new Error("couldn't fetch da cutie :<");
 
-            const cats = await res.json();
-            const cat = cats[0];
+            const cat = (await res.json())[0];
 
             await interaction.editReply({
                 components: [

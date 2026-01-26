@@ -4,7 +4,7 @@ class BaseCommand {
         this.data = data;
     }
 
-    async stage(){}
+    stage(){}
 
     /**
      * Return a notification component..

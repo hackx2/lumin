@@ -2,28 +2,31 @@ const { SlashCommandBuilder, ContainerBuilder, MessageFlags } = require('discord
 const fs = require('fs');
 const path = require('path');
 
-const postsFile = path.join(__dirname, './hug.json');
-const posts = JSON.parse(fs.readFileSync(postsFile, 'utf-8'));
-
-module.exports = class extends require('../../~BaseCommand') {
+module.exports = class extends require('../~BaseCommand') {
     constructor() {
-        super({}, new SlashCommandBuilder()
-            .setName('hug')
-            .setDescription('Hug someone!')
-            .addUserOption((opt) =>
-                opt.setName('cutie').setDescription('whose the lucky one?').setRequired(true),
-            ));
+        super({}, new SlashCommandBuilder());
+
+        this.data.setName('hug');
+        this.data.setDescription('Hug someone!');
+        this.data.addUserOption((option) =>
+            option.setName('cutie').setDescription('whose the lucky one?').setRequired(true),
+        );
+    }
+
+    stage() {
+        this.postsFile = path.join(__dirname, '../../assets/hug', 'hug.json');
+        this.posts = JSON.parse(fs.readFileSync(this.postsFile, 'utf-8'));
     }
 
     async run(interaction) {
-        await interaction.deferReply();
-
         const targetUser = interaction.options.getUser('cutie');
-        const randomPost = posts[Math.floor(Math.random() * posts.length)];
+        const randomPost = this.posts[Math.floor(Math.random() * this.posts.length)];
+
+        await interaction.deferReply();
 
         let postData;
         try {
-            const imagePath = path.join(__dirname, randomPost.id + '.png');
+            const imagePath = path.join(__dirname, '../../assets/hug', randomPost.id + '.png');
             if (!fs.existsSync(imagePath)) throw new Error(`img file not found: ${imagePath}`);
 
             const buffer = fs.readFileSync(imagePath);

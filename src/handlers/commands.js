@@ -23,7 +23,7 @@ function loadCommands(client, dir) {
             command = new woah();
             command.stage();
         } catch (e) {
-            console.error('Skipping:', fullPath);
+            console.error('Skipping:', fullPath, e);
             continue;
         }
 
