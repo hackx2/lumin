@@ -1,3 +1,5 @@
+const notification = require("../notification");
+
 const cooldowns = new Map();
 
 module.exports = {
@@ -13,7 +15,7 @@ module.exports = {
         if (now < expires) {
             const seconds = Math.ceil((expires - now) / 1000);
             await interaction.reply(
-                this.notification(`🫸Wait \`${seconds}s\` before using this command again...`, {
+                notification(`🫸Wait \`${seconds}s\` before using this command again...`, {
                     ephemeral: true,
                 }),
             );
