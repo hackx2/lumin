@@ -19,7 +19,7 @@ module.exports = class extends require('../~BaseCommand') {
             components: [
                 new ContainerBuilder()
                     .addTextDisplayComponents((textDisplay) =>
-                        textDisplay.setContent('`fas/home/lumin/abot`'),
+                        textDisplay.setContent('`/home/lumin/abot`'),
                     )
 
                     .addSeparatorComponents((separator) => separator)
