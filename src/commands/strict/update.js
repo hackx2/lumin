@@ -21,7 +21,7 @@ module.exports = class extends require('../~BaseCommand') {
 
     async run(interaction) {
         await interaction.reply({
-            content: `Pulling from git@[${repoPath}](${git.repoURL})`,
+            content: `Pulling from git@[${this.repoPath}](${this.git.repoURL})`,
         });
         exec('git pull');
 
