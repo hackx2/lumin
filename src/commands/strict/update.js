@@ -21,18 +21,27 @@ module.exports = class extends require('../~BaseCommand') {
 
     async run(interaction) {
         await interaction.reply({
-            content: `Pulling from git@[${this.repoPath}](${this.git.repoURL})`,
+            content: `Pulling from git@[${this.repoPath}](<${this.git.repoURL}>)`,
         });
-        exec('git pull');
+        execSync('git pull');
 
         await interaction.editReply({
             content: `Installing dependencies`,
         });
-        exec('yarn install');
+        execSync('yarn install');
 
         await interaction.editReply({
             content: `Restarting...`,
         });
-        exec('pm2 restart "Lumin"');
+        try {
+            execSync('pm2 restart "Lumin"');
+        } catch (e) {}
+        await interaction.editReply({
+            content: `done...\ndeleting in 3 seconds...`,
+        });
+
+        setTimeout(async () => {
+            await interaction.deleteReply();
+        }, 3000);
     }
 };
