@@ -31,7 +31,7 @@ module.exports = class extends require('../~BaseCommand') {
         execSync('yarn install');
 
         await interaction.editReply({
-            content: `Restarting...`,
+            content: `Restarting....`,
         });
         try {
             execSync('pm2 restart "Lumin"');
