@@ -34,8 +34,8 @@ module.exports = class extends require('../~BaseCommand') {
             content: `Restarting....`,
         });
 
-        // try {
-        //     execSync('pm2 restart "Lumin"');
-        // } catch (e) {}
+        try {
+            execSync('pm2 restart "Lumin"');
+        } catch (e) {}
     }
 };
