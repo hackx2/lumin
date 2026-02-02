@@ -1,20 +1,24 @@
 const { ContainerBuilder, SlashCommandBuilder, MessageFlags } = require('discord.js');
 
 module.exports = class extends require('../~BaseCommand') {
+    #path; // Repository Path
+    #os = require('../../utils/os'); // OS Information
+    #git = require('../../utils/git'); // Git Data Instance
+
     constructor() {
         super({ cooldown: 5 });
 
-        this.data = new SlashCommandBuilder()
-            .setName('abot')
-            .setDescription("lumin's bot information");
+        this.data = new SlashCommandBuilder();
+        this.data.setName('abot');
+        this.data.setDescription("lumin's bot information");
+
+        (async () => {
+            this.#git = await this.#git();
+            this.#path = this.#git.repoURL.split('/').slice(-2).join('/').replace('.git', '');
+        })();
     }
 
     async run(interaction, client) {
-        const osUtility = require('../../utils/os');
-        const git = await require('../../utils/git')();
-
-        const repoPath = git.repoURL.split('/').slice(-2).join('/').replace('.git', '');
-
         await interaction.reply({
             components: [
                 new ContainerBuilder()
@@ -29,18 +33,18 @@ module.exports = class extends require('../~BaseCommand') {
                             text.setContent(
                                 `**Ping:** ${client.ws.ping === -1 ? '`???`' : `${client.ws.ping}ms`}`,
                             ),
-                        (text) => text.setContent(`**Uptime:** ${osUtility.uptime}`),
+                        (text) => text.setContent(`**Uptime:** ${this.#os.uptime}`),
                         (text) =>
                             text.setContent(
-                                `**Operating System:** \`${osUtility.platform} (${require('os').arch()})\``,
+                                `**Operating System:** \`${this.#os.platform} (${require('os').arch()})\``,
                             ),
                         (text) =>
                             text.setContent(
-                                `**CPU:** \`${osUtility.cpu.cpu.model}\` • Cores: \`${require('os').cpus().length}\` • Usage: \`${osUtility.cpu.percent}%\``,
+                                `**CPU:** \`${this.#os.cpu.cpu.model}\` • Cores: \`${require('os').cpus().length}\` • Usage: \`${this.#os.cpu.percent}%\``,
                             ),
                         (text) =>
                             text.setContent(
-                                `**RAM:** \`${osUtility.ram.used} / ${osUtility.ram.total} MB\``,
+                                `**RAM:** \`${this.#os.ram.used} / ${this.#os.ram.total} MB\``,
                             ),
                     )
 
@@ -49,7 +53,7 @@ module.exports = class extends require('../~BaseCommand') {
                     .addTextDisplayComponents((text) =>
                         text.setContent(
                             `**Versions:** Node.js \`${process.version}\` • Discord.js \`${require('discord.js').version}\`\n` +
-                                `**Repository:** [${repoPath}](${git.repoURL}) ([${git.commitHash}](${git.repoURL.replace('.git', '')}/commit/${git.commitHash}))\n`,
+                                `**Repository:** [${this.#path}](${this.#git.repoURL}) ([${this.#git.commitHash}](${this.#git.repoURL.replace('.git', '')}/commit/${this.#git.commitHash}))\n`,
                         ),
                     )
                     .addSeparatorComponents((separator) => separator)

@@ -7,9 +7,7 @@ module.exports = {
         for (const permission of settings.permissions) {
             if (!interaction.memberPermissions?.has(permission)) {
                 await interaction.reply(
-                    notification('You do not have permission to execute this command..', {
-                        ephemeral: true,
-                    }),
+                    notification('You do not have permission to execute this command..', [MessageFlags.Ephemeral]),
                 );
                 return false;
             }

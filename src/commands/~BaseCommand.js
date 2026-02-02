@@ -4,8 +4,6 @@ class BaseCommand {
         this.data = data;
     }
 
-    stage(){}
-
     /**
      * Return a notification component..
      *
@@ -13,12 +11,12 @@ class BaseCommand {
      * @param {*} props Extra options (e.g. flags..)
      * @returns
      */
-    async notification(msg, props = {}) {
+    notification(msg, props = {}) {
         return require('../utils/notification')(msg, props);
     }
 
     async run(interaction, client) {
-        throw new Error('Run method not implemented in command.');
+        throw new Error('Not implemented');
     }
 }
 

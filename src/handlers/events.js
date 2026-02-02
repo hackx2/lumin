@@ -1,45 +1,55 @@
-const fs = require('fs');
-const path = require('path');
+'use strict';
 
-function loadEvents(client, dir) {
-    const eventFolder = fs.readdirSync(dir, { withFileTypes: true });
+const fs = require('node:fs');
+const path = require('node:path');
+const { warn, error } = require('../utils/logger');
 
-    for (const evnt of eventFolder) {
-        const fullPath = path.join(dir, evnt.name);
+module.exports = class EventHandler extends require('./~BaseHandler') {
+    constructor(client) {
+        super(client, '../events');
+    }
 
-        if (evnt.isDirectory()) {
-            loadEvents(client, fullPath);
-            continue;
-        }
+    loadEvents(dir) {
+        for (const entry of fs.readdirSync(dir, { withFileTypes: true })) {
+            const filePath = path.join(dir, entry.name);
 
-        if (!evnt.name.endsWith('.js')) continue;
+            if (entry.isDirectory()) {
+                this.loadEvents(filePath);
+                continue;
+            }
 
-        delete require.cache[require.resolve(fullPath)];
+            if (!entry.name.endsWith('.js') || entry.name.startsWith('~')) {
+                continue;
+            }
 
-        const event = require(fullPath);
-
-        if (!event?.id || typeof event.run !== 'function') {
-            console.warn(`Invalid event file${fullPath}`);
-            continue;
-        }
-
-        async function handler(...args) {
             try {
-                await event.run(...args, client);
+                delete require.cache[require.resolve(filePath)];
+
+                const event = require(filePath);
+
+                if (!event?.id || typeof event.run !== 'function') {
+                    warn(`Invalid event definition: ${filePath}`);
+                    continue;
+                }
+
+                const handler = async (...args) => {
+                    try {
+                        await event.run(...args, this.client);
+                    } catch (err) {
+                        error(`Error in event "${event.id}"`, err);
+                    }
+                };
+
+                event.once
+                    ? this.client.once(event.id, handler)
+                    : this.client.on(event.id, handler);
             } catch (err) {
-                console.error(`Error in event ${event.id}`, err);
+                error(`Failed to load event: ${filePath}`, err);
             }
         }
-
-        if (event.once) {
-            client.once(event.id, handler);
-        } else {
-            client.on(event.id, handler);
-        }
     }
-}
 
-module.exports.run = (client) => {
-    const eventsPath = path.join(__dirname, '../events');
-    loadEvents(client, eventsPath);
+    run() {
+        this.loadEvents(this.path);
+    }
 };

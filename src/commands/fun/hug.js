@@ -1,6 +1,7 @@
 const { SlashCommandBuilder, ContainerBuilder, MessageFlags } = require('discord.js');
 const fs = require('fs');
 const path = require('path');
+const { error } = require('../../utils/logger');
 
 module.exports = class extends require('../~BaseCommand') {
     constructor() {
@@ -11,9 +12,7 @@ module.exports = class extends require('../~BaseCommand') {
         this.data.addUserOption((option) =>
             option.setName('cutie').setDescription('whose the lucky one?').setRequired(true),
         );
-    }
 
-    stage() {
         this.postsFile = path.join(__dirname, '../../assets/hug', 'hug.json');
         this.posts = JSON.parse(fs.readFileSync(this.postsFile, 'utf-8'));
     }
@@ -37,7 +36,7 @@ module.exports = class extends require('../~BaseCommand') {
                 fetchedAt: Date.now(),
             };
         } catch (err) {
-            console.error(err);
+            error(err);
             return interaction.editReply(
                 this.notification(`:< Failed to load hug image ${randomPost.id}`),
             );
