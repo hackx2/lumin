@@ -1,4 +1,5 @@
-const { SlashCommandBuilder, PermissionFlagsBits } = require('discord.js');
+const { SlashCommandBuilder, PermissionFlagsBits, MessageFlags } = require('discord.js');
+const { error } = require('../../utils/logger');
 
 module.exports = class extends require('../~BaseCommand') {
     constructor() {
@@ -17,11 +18,11 @@ module.exports = class extends require('../~BaseCommand') {
         try {
             const text = interaction.options.getString('text');
 
-            await interaction.deferReply({ ephemeral: true });
+            await interaction.deferReply({ flags: [MessageFlags.Ephemeral] });
             await interaction.channel.send({ content: text });
             await interaction.deleteReply();
         } catch (err) {
-            console.error(err);
+            error(err);
         }
     }
 };

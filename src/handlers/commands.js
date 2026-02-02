@@ -1,65 +1,62 @@
-const fs = require('fs');
-const path = require('path');
+'use strict';
+
+const fs = require('node:fs');
+const path = require('node:path');
 const { Collection, REST, Routes } = require('discord.js');
+const { error, info, success, warn } = require('../utils/logger');
 
-function loadCommands(client, dir) {
-    const entries = fs.readdirSync(dir, { withFileTypes: true });
-
-    for (const entry of entries) {
-        const fullPath = path.join(dir, entry.name);
-
-        if (entry.isDirectory()) {
-            loadCommands(client, fullPath);
-            continue;
-        }
-
-        if (entry.name.startsWith('~') || !entry.name.endsWith('.js')) continue;
-
-        delete require.cache[require.resolve(fullPath)];
-
-        let command;
-        try {
-            const woah = require(fullPath);
-            command = new woah();
-            command.stage();
-        } catch (e) {
-            console.error('Skipping:', fullPath, e);
-            continue;
-        }
-
-        if (!command?.data || !command.data.name || typeof command.run !== 'function') {
-            console.warn(`Invalid command file: ${fullPath}`);
-            continue;
-        }
-
-        client.commands.set(command.data.name, command);
-    }
-}
-
-module.exports.run = (client) => {
-    client.commands = new Collection();
-
-    const commandsPath = path.join(__dirname, '../commands');
-
-    if (!fs.existsSync(commandsPath)) {
-        console.warn('Commands directory not found');
-        return;
+module.exports = class extends require('./~BaseHandler') {
+    constructor(client) {
+        super(client, '../commands');
+        this.client.commands = new Collection();
+        this.rest = new REST({ version: '10' }).setToken(process.env.TOKEN);
     }
 
-    loadCommands(client, commandsPath);
+    loadCommands(dir) {
+        for (const entry of fs.readdirSync(dir, { withFileTypes: true })) {
+            const filePath = path.join(dir, entry.name);
 
-    const rest = new REST().setToken(process.env.TOKEN);
-    const commands = client.commands.map((c) => c.data.toJSON());
+            if (entry.isDirectory()) {
+                this.loadCommands(filePath);
+                continue;
+            }
 
-    (async () => {
+            if (!entry.name.endsWith('.js') || entry.name.startsWith('~')) {
+                continue;
+            }
+
+            try {
+                delete require.cache[require.resolve(filePath)];
+
+                const CommandClass = require(filePath);
+                const command = new CommandClass();
+
+                if (!command?.data?.name || typeof command.run !== 'function') {
+                    warn(`Invalid command: ${filePath}`);
+                    continue;
+                }
+
+                this.client.commands.set(command.data.name, command);
+            } catch (err) {
+                error(`Failed to load command: ${filePath}`, err);
+            }
+        }
+    }
+
+    async run() {
+        this.loadCommands(this.path);
+        const payload = this.client.commands.map((cmd) => cmd.data.toJSON());
+
         try {
-            console.log(`Started refreshing ${commands.length} application (/) commands.`);
-            const data = await rest.put(Routes.applicationCommands(process.env.CLIENT_ID), {
-                body: commands,
+            info(`Refreshing`, payload.length, `application (/) commands…`);
+
+            const GET = await this.rest.put(Routes.applicationCommands(process.env.CLIENT_ID), {
+                body: payload,
             });
-            console.log(`Successfully reloaded ${data.length} application (/) commands.`);
-        } catch (error) {
-            console.error(error);
+
+            success('Successfully registered', GET.length, 'application (/) commands.');
+        } catch (err) {
+            error('Failed to register application commands:', err);
         }
-    })();
+    }
 };

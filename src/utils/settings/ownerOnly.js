@@ -1,3 +1,4 @@
+const { MessageFlags } = require('discord.js');
 const notification = require('../notification');
 
 module.exports = {
@@ -10,7 +11,7 @@ module.exports = {
             await interaction.reply(
                 notification(
                     'You do not have permission to execute this command..' /*:< This command is owner-only."*/,
-                    { ephemeral: true },
+                    [MessageFlags.Ephemeral],
                 ),
             );
             return false;

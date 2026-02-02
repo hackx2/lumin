@@ -10,15 +10,12 @@ module.exports = class extends require('../~BaseCommand') {
             .setDescription('pull & push')
             .setDefaultMemberPermissions(PermissionFlagsBits.Administrator);
 
-        this.git = null;
-        this.repoPath = null;
+        (async () => {
+            this.git = await require('../../utils/git')();
+            this.repoPath = this.git.repoURL.split('/').slice(-2).join('/').replace('.git', '');
+        })();
     }
-
-    async stage() {
-        this.git = await require('../../utils/git')();
-        this.repoPath = this.git.repoURL.split('/').slice(-2).join('/').replace('.git', '');
-    }
-
+    
     async run(interaction) {
         await interaction.reply({
             content: `Pulling from git@[${this.repoPath}](<${this.git.repoURL}>)`,

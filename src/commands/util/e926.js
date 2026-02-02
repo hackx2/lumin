@@ -1,4 +1,5 @@
 const { SlashCommandBuilder, ContainerBuilder, MessageFlags } = require('discord.js');
+const { error } = require('../../utils/logger');
 
 module.exports = class extends require('../~BaseCommand') {
     constructor() {
@@ -53,7 +54,7 @@ module.exports = class extends require('../~BaseCommand') {
                 flags: [MessageFlags.IsComponentsV2],
             });
         } catch (err) {
-            console.error(err);
+            error(err);
             await interaction.editReply(this.notification(':<  Failed to fetch art'));
         }
     }

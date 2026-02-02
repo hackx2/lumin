@@ -1,3 +1,5 @@
+const { MessageFlags } = require("discord.js");
+
 module.exports = {
     run: async (_, interaction, settings) => {
         if (!settings.botPermissions?.length || !interaction.guild) return true;
@@ -7,7 +9,7 @@ module.exports = {
         if (botMember.permissions.missing(settings.botPermissions).length) {
             await interaction.reply(
                 notification(`:< I am missing permissions:\n${missing.join(', ')}`, {
-                    ephemeral: true,
+                    flags: [MessageFlags.Ephemeral],
                 }),
             );
             return false;

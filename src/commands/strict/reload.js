@@ -1,25 +1,36 @@
-const { SlashCommandBuilder, PermissionFlagsBits, MessageFlags } = require('discord.js');
+const { SlashCommandBuilder, PermissionFlagsBits } = require('discord.js');
+const { error, success } = require('../../utils/logger');
+const CommandHandler = require('../../handlers/commands');
 
 module.exports = class extends require('../~BaseCommand') {
     constructor() {
-        super({ ownerOnly: false });
+        super({ ownerOnly: true });
 
-        this.data = new SlashCommandBuilder()
-            .setName('reload')
-            .setDescription('Reload Slash Commands...')
-            .setDefaultMemberPermissions(PermissionFlagsBits.Administrator);
+        this.data = new SlashCommandBuilder();
+        this.data.setName('reload');
+        this.data.setDescription('Reload Slash Commands...');
+        this.data.setDefaultMemberPermissions(PermissionFlagsBits.Administrator);
     }
 
     async run(interaction, client) {
-        await interaction.deferReply({ flags: [MessageFlags.Ephemeral] });
+        await interaction.deferReply();
 
         try {
             client.commands.clear();
-            require('../../handlers/commands').run(client);
-            await interaction.editReply(this.notification(';3 Slash commands reloaded!'));
+
+            new CommandHandler(client).run();
+
+            success('Successfully reloaded * slash commands');
+
+            await interaction.editReply(
+                this.notification(`Successfully reloaded \`*\` slash commands 🌙`),
+            );
         } catch (err) {
-            console.error(err);
-            await interaction.editReply(this.notification(':< Failed to reload Slash commands.'));
+            error('Failed to reload * slash commands:', err);
+            
+            await interaction.editReply(
+                this.notification('Failed to reload \`*\` slash commands: ' + err),
+            );
         }
     }
 };

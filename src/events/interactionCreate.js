@@ -1,8 +1,9 @@
-const { Events } = require('discord.js');
+const { Events, MessageFlags } = require('discord.js');
 const fs = require('fs');
 const path = require('path');
 const settings = require('../utils/settings');
 const notification = require('../utils/notification');
+const { error } = require('../utils/logger');
 
 const checksDir = path.join(__dirname, '../utils/settings');
 const defaultSettings = settings();
@@ -31,13 +32,17 @@ module.exports = {
         try {
             await command.run(interaction, client);
         } catch (err) {
-            console.error(err);
+            error(err);
 
-            if (!interaction.replied) {
+            const FOLLOW_UP_MESSAGE = 'There was an error while executing this command!';
+
+            if (interaction.replied || interaction.deferred) {
+                await interaction.followUp(
+                    notification(FOLLOW_UP_MESSAGE, [MessageFlags.Ephemeral]),
+                );
+            } else {
                 await interaction.reply(
-                    notification('An error occurred while executing the command.......', {
-                        ephemeral: true,
-                    }),
+                    notification(FOLLOW_UP_MESSAGE, [MessageFlags.Ephemeral]),
                 );
             }
         }

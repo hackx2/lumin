@@ -24,7 +24,7 @@ module.exports = class extends require('../~BaseCommand') {
     }
 
     async run(interaction) {
-        await interaction.deferReply({ ephemeral: false });
+        await interaction.deferReply();
 
         const user = interaction.options.getUser('user');
         const reason = interaction.options.getString('reason') ?? 'No reason provided';
@@ -33,7 +33,7 @@ module.exports = class extends require('../~BaseCommand') {
 
         if (!me.permissions.has(PermissionFlagsBits.KickMembers)) {
             return interaction.editReply(
-                this.notification("I don't have permission to `KickMembers`.", { ephemeral: true }),
+                this.notification("I don't have permission to `KickMembers`.", [MessageFlags.Ephemeral]),
             );
         }
 
@@ -42,7 +42,7 @@ module.exports = class extends require('../~BaseCommand') {
             return interaction.editReply(
                 this.notification(
                     "I can't ban this user because their role is higher than or equal to mine...",
-                    { ephemeral: true },
+                    [MessageFlags.Ephemeral],
                 ),
             );
         }
@@ -51,7 +51,7 @@ module.exports = class extends require('../~BaseCommand') {
             await interaction.guild.members.kick(user.id, { reason });
         } catch (err) {
             return interaction.editReply(
-                this.notification(`Failed to kick user: \`${err.message}\``, { ephemeral: true }),
+                this.notification(`Failed to kick user: \`${err.message}\``, [MessageFlags.Ephemeral]),
             );
         }
 

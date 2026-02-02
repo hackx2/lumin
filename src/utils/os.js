@@ -33,9 +33,9 @@ module.exports = {
                 ? 'macOS (Apple Silicon)'
                 : 'macOS (Intel)'
             : ({
-                  win32: 'Windows',
-                  linux: 'Linux',
-              }[process.platform] ?? 'Unknown'),
+                win32: 'Windows',
+                linux: 'Linux',
+            }[process.platform] ?? 'Unknown'),
 
     get uptime() {
         return formatUptime(process.uptime());
