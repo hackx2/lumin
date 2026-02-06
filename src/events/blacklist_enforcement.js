@@ -4,14 +4,13 @@ module.exports = {
     id: Events.GuildMemberAdd,
     once: false,
     async run(member) {
-        const blacklist = process.env.BLACKLISTED_USER_IDS;
+        const blacklist = process.lumin.security.blacklisted_user_ids;
 
         if (!blacklist) return;
 
-        const ids = blacklist.split(',');
-        const mapped = ids.map((id) => id.trim());
+        const bList = blacklist.map((id) => id.trim());
 
-        if (mapped.includes(member.id.toLowerCase())) {
+        if (bList.includes(member.id.toLowerCase())) {
             member.ban({ reason: 'Blacklisted...' }); // maow
         }
     },
