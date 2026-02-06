@@ -1,15 +1,39 @@
 'use strict';
 
 require('dotenv').config();
+require('./utils/config').config();
 
-const { Client, GatewayIntentBits } = require('discord.js');
+const { Client, GatewayIntentBits, ActivityType } = require('discord.js');
 const fs = require('fs'); const path = require('path');
 const { warn, error, success } = require('./utils/logger');
 
 // --- Client Setup ------------------------------------------------------------
 
-const client = new Client({ intents: [GatewayIntentBits.Guilds, GatewayIntentBits.GuildMembers] });
-client.owners = process.env.OWNER_IDS.split(',').map((id) => id.trim());
+const client = new Client({
+    intents: [GatewayIntentBits.Guilds, GatewayIntentBits.GuildMembers],
+    presence: (() => {
+        const activityMap = {
+            playing: ActivityType.Playing,
+            streaming: ActivityType.Streaming,
+            listening: ActivityType.Listening,
+            watching: ActivityType.Watching,
+            competing: ActivityType.Competing,
+        };
+
+        const presence = process.lumin.presence;
+        return {
+            activities: [
+                { name: presence.activity_name, type: activityMap[presence.activity_type] },
+            ],
+            status: presence.status,
+        };
+    })(),
+});
+
+// --- Register Owners ------------------------------------------------------------
+
+client.owners = process.lumin.bot.owner_ids.map((id) => id.trim());
+success(`Registered ${client.owners.length} owner(s) account(s)`);
 
 // --- Handler Loader ----------------------------------------------------------
 

@@ -23,7 +23,7 @@ module.exports = class extends require('../~BaseCommand') {
             components: [
                 new ContainerBuilder()
                     .addTextDisplayComponents((textDisplay) =>
-                        textDisplay.setContent('`/home/lumin/abot`'),
+                        textDisplay.setContent('`/home/lumin/abot`'+` | \`v${process.lumin.metadata.version}\``),
                     )
 
                     .addSeparatorComponents((separator) => separator)

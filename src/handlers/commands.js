@@ -50,7 +50,7 @@ module.exports = class extends require('./~BaseHandler') {
         try {
             info(`Refreshing`, payload.length, `application (/) commands…`);
 
-            const GET = await this.rest.put(Routes.applicationCommands(process.env.CLIENT_ID), {
+            const GET = await this.rest.put(Routes.applicationGuildCommands(process.lumin.bot.client_id, process.lumin.bot.guild_id), {
                 body: payload,
             });
 

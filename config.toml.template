@@ -1,0 +1,22 @@
+# ==========================================
+#              BOT CONFIGURATION
+# ==========================================
+
+[bot]
+client_id               = "BOT_CLIENT_ID_HERE"
+guild_id                = "GUILD_ID"
+owner_ids               = ["707228048864444477"]
+
+[presence]
+activity_name           = 'LoFi 🌙'
+activity_type           = 'listening'
+status                  = 'idle'
+
+[channels]
+welcome                 = "WELCOME_CHANNEL_ID_HERE"
+
+[security]
+blacklisted_user_ids    = []
+
+[metadata]
+version                 = "1.0.0"
