@@ -15,7 +15,12 @@ module.exports = class extends require('../~BaseCommand') {
             .setName('purge')
             .setDescription('Purge messages.')
             .addIntegerOption((opt) =>
-                opt.setName('amount').setDescription('How many messages.').setRequired(true),
+                opt
+                    .setName('amount')
+                    .setDescription('How many messages.')
+                    .setRequired(true)
+                    .setMinValue(1)
+                    .setMaxValue(100),
             )
             .setDefaultMemberPermissions(PermissionFlagsBits.ManageMessages);
     }
@@ -42,7 +47,11 @@ module.exports = class extends require('../~BaseCommand') {
             });
         } catch (error) {
             console.error(error);
-            await interaction.editReply(this.notification('There was an error trying to purge messages in this channel!\n(Messages older than 14 days cannot be bulk deleted).'));
+            await interaction.editReply(
+                this.notification(
+                    'There was an error trying to purge messages in this channel!\n(Messages older than 14 days cannot be bulk deleted).',
+                ),
+            );
         }
     }
 };
