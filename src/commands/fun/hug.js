@@ -13,19 +13,19 @@ module.exports = class extends require('../~BaseCommand') {
             option.setName('cutie').setDescription('whose the lucky one?').setRequired(true),
         );
 
-        this.postsFile = path.join(__dirname, '../../assets/hug', 'hug.json');
+        this.postsFile = path.join(__dirname, '../../../assets/hug', 'hug.json');
         this.posts = JSON.parse(fs.readFileSync(this.postsFile, 'utf-8'));
     }
 
     async run(interaction) {
+        await interaction.deferReply();
+
         const targetUser = interaction.options.getUser('cutie');
         const randomPost = this.posts[Math.floor(Math.random() * this.posts.length)];
 
-        await interaction.deferReply();
-
         let postData;
         try {
-            const imagePath = path.join(__dirname, '../../assets/hug', randomPost.id + '.png');
+            const imagePath = path.join(__dirname, '../../../assets/hug', randomPost.id + '.png');
             if (!fs.existsSync(imagePath)) throw new Error(`img file not found: ${imagePath}`);
 
             const buffer = fs.readFileSync(imagePath);
