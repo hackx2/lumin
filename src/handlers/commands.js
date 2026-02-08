@@ -9,7 +9,7 @@ module.exports = class extends require('./~BaseHandler') {
     constructor(client) {
         super(client, '../commands');
         this.client.commands = new Collection();
-        this.rest = new REST({ version: '10' }).setToken(process.env.TOKEN);
+        this.rest = new REST({ version: '10' }).setToken(process.lumin.bot.token);
     }
 
     loadCommands(dir) {

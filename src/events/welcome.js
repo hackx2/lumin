@@ -5,7 +5,7 @@ module.exports = {
     id: Events.GuildMemberAdd,
     once: false,
     async run(member) {
-        const channel = member.guild.channels.cache.get(process.env.WELCOME_CHANNEL);
+        const channel = member.guild.channels.cache.get(process.lumin.channels.welcome);
         if (!channel) return;
         channel.send(
             notification(
