@@ -46,7 +46,7 @@ module.exports = class extends require('./~BaseHandler') {
             .map((cmd) => cmd.data.toJSON());
 
         try {
-            info(`Refreshing`, slashPayload.length, `application (/) commands…`);
+            info(`Refreshing`, payload.length, `application (/) commands…`);
             const GET = await this.rest.put(
                 Routes.applicationGuildCommands(
                     process.lumin.bot.client_id,

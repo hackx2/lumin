@@ -1,0 +1,3 @@
+- create a separate class for non-slash-commands
+- optimize everything
+- rewrite in haxe using externs (maybe)
