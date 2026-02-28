@@ -1,14 +1,14 @@
 'use strict';
 
-const { Client, GatewayIntentBits, ActivityType, Collection } = require('discord.js');
+const { Client, ActivityType, Collection } = require('discord.js');
 const fs = require('fs');
 const path = require('path');
 const { error, success } = require('./utils/logger');
 
 module.exports = class LuminClient extends Client {
-    constructor() {
+    constructor(intents) {
         super({
-            intents: [GatewayIntentBits.Guilds, GatewayIntentBits.GuildMembers],
+            intents: intents,
             presence: LuminClient.generatePresence(),
         });
 
