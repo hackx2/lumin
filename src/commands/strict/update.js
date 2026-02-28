@@ -9,6 +9,7 @@ module.exports = class extends require('../~BaseCommand') {
 
         this.git = null;
         this.repoPath = 'Loading...';
+        this.namee = process.lumin.bot.name;
 
         (async () => {
             try {
@@ -17,8 +18,6 @@ module.exports = class extends require('../~BaseCommand') {
             } catch (e) {}
         })();
     }
-    
-    namee = process.lumin.bot.name;
 
     async run(interaction, client, args, slash = true) {
         const reply = async (text) => {
@@ -38,7 +37,7 @@ module.exports = class extends require('../~BaseCommand') {
 
         let isLumin = false;
         try {
-            execSync(`pm2 describe "${namee}"`, { stdio: 'ignore' });
+            execSync(`pm2 describe "${this.namee}"`, { stdio: 'ignore' });
             isLumin = true;
         } catch (e) {}
 
@@ -51,11 +50,11 @@ module.exports = class extends require('../~BaseCommand') {
             execSync('yarn install');
 
             if (!isLumin) {
-                await reply(`"${namee}" instance not found, starting it up..`);
-                execSync(`pm2 start src/main.js --name "${namee}"`);
+                await reply(`"${this.namee}" instance not found, starting it up..`);
+                execSync(`pm2 start src/main.js --name "${this.namee}"`);
             } else {
                 await reply(`Restarting....`);
-                execSync(`pm2 restart "${namee}"`);
+                execSync(`pm2 restart "${this.namee}"`);
             }
         } catch (err) {
             await reply(`Failed to update: ${err.message}`);
