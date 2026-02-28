@@ -2,4 +2,11 @@
 
 require('./utils/config').config();
 
-new (require('./LuminClient'))().start(process.lumin.bot.token);
+const { GatewayIntentBits } = require('discord.js');
+
+new (require('./LuminClient'))([
+    GatewayIntentBits.Guilds,
+    GatewayIntentBits.GuildMembers,
+    GatewayIntentBits.MessageContent,
+    GatewayIntentBits.GuildMessages,
+]).start(process.lumin.bot.token);

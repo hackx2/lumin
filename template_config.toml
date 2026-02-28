@@ -3,10 +3,12 @@
 # ==========================================
 
 [bot]
+name                    = "Lumin"
 token                   = "BOT_TOKEN_HERE"
 client_id               = "BOT_CLIENT_ID_HERE"
 guild_id                = "GUILD_ID"
 owner_ids               = ["707228048864444477"]
+prefix                  = "~"
 
 [presence]
 activity_name           = 'LoFi 🌙'

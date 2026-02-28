@@ -5,5 +5,6 @@ module.exports = (overrides = {}) => ({
     userPermissions: [],
     cooldown: 0,
     permissions: [],
+    prefixed: 'SLASH', // SLASH, PREFIXED, or SLASH_PREFIXED
     ...overrides,
 });

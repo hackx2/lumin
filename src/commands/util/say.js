@@ -3,7 +3,7 @@ const { error } = require('../../utils/logger');
 
 module.exports = class extends require('../~BaseCommand') {
     constructor() {
-        super({ ownerOnly: true });
+        super();
 
         this.data = new SlashCommandBuilder()
             .setName('say')
@@ -11,7 +11,7 @@ module.exports = class extends require('../~BaseCommand') {
             .addStringOption((opt) =>
                 opt.setName('text').setDescription('Text to send').setRequired(true),
             )
-            .setDefaultMemberPermissions(PermissionFlagsBits.Administrator);
+            .setDefaultMemberPermissions(PermissionFlagsBits.ManageGuild);
     }
 
     async run(interaction) {

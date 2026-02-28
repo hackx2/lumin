@@ -15,19 +15,14 @@ module.exports = class extends require('./~BaseHandler') {
     loadCommands(dir) {
         for (const entry of fs.readdirSync(dir, { withFileTypes: true })) {
             const filePath = path.join(dir, entry.name);
-
             if (entry.isDirectory()) {
                 this.loadCommands(filePath);
                 continue;
             }
-
-            if (!entry.name.endsWith('.js') || entry.name.startsWith('~')) {
-                continue;
-            }
+            if (!entry.name.endsWith('.js') || entry.name.startsWith('~')) continue;
 
             try {
                 delete require.cache[require.resolve(filePath)];
-
                 const CommandClass = require(filePath);
                 const command = new CommandClass();
 
@@ -45,15 +40,20 @@ module.exports = class extends require('./~BaseHandler') {
 
     async run() {
         this.loadCommands(this.path);
-        const payload = this.client.commands.map((cmd) => cmd.data.toJSON());
+
+        const payload = this.client.commands
+            .filter((cmd) => cmd.settings.prefixed !== 'PREFIXED')
+            .map((cmd) => cmd.data.toJSON());
 
         try {
-            info(`Refreshing`, payload.length, `application (/) commands…`);
-
-            const GET = await this.rest.put(Routes.applicationGuildCommands(process.lumin.bot.client_id, process.lumin.bot.guild_id), {
-                body: payload,
-            });
-
+            info(`Refreshing`, slashPayload.length, `application (/) commands…`);
+            const GET = await this.rest.put(
+                Routes.applicationGuildCommands(
+                    process.lumin.bot.client_id,
+                    process.lumin.bot.guild_id,
+                ),
+                { body: payload },
+            );
             success('Successfully registered', GET.length, 'application (/) commands.');
         } catch (err) {
             error('Failed to register application commands:', err);
